@@ -2,9 +2,9 @@
 # install_teachbot_ros.sh
 # Installation script for TOS Teachbot ROS2 node
 #
-# Prerequisites:
-#   - Ubuntu 22.04
-#   - ROS2 Humble installed (sudo apt install ros-humble-desktop)
+# Supported:
+#   - Ubuntu 22.04 (Jammy) + ROS2 Humble
+#   - Ubuntu 24.04 (Noble) + ROS2 Jazzy
 #
 # Usage:
 #   chmod +x install_teachbot_ros.sh
@@ -23,16 +23,26 @@ GREEN='\033[0;32m'
 YELLOW='\033[1;33m'
 NC='\033[0m' # No Color
 
-# Check for ROS2 Humble
-echo -e "${YELLOW}[1/6] Checking ROS2 Humble installation...${NC}"
-if [ -f "/opt/ros/humble/setup.bash" ]; then
-    echo -e "${GREEN}✓ ROS2 Humble found${NC}"
+# Detect ROS2 installation
+echo -e "${YELLOW}[1/6] Detecting ROS2 installation...${NC}"
+ROS_DISTRO=""
+if [ -f "/opt/ros/jazzy/setup.bash" ]; then
+    ROS_DISTRO="jazzy"
+    source /opt/ros/jazzy/setup.bash
+    echo -e "${GREEN}✓ ROS2 Jazzy found${NC}"
+elif [ -f "/opt/ros/humble/setup.bash" ]; then
+    ROS_DISTRO="humble"
     source /opt/ros/humble/setup.bash
+    echo -e "${GREEN}✓ ROS2 Humble found${NC}"
 else
-    echo -e "${RED}✗ ROS2 Humble not found!${NC}"
-    echo "Please install ROS2 Humble first:"
-    echo "  sudo apt update"
-    echo "  sudo apt install ros-humble-desktop python3-colcon-common-extensions"
+    echo -e "${RED}✗ ROS2 not found!${NC}"
+    echo "Please install ROS2 Humble or Jazzy first:"
+    echo ""
+    echo "  For Ubuntu 22.04 (Humble):"
+    echo "    sudo apt install ros-humble-desktop python3-colcon-common-extensions"
+    echo ""
+    echo "  For Ubuntu 24.04 (Jazzy):"
+    echo "    sudo apt install ros-jazzy-desktop python3-colcon-common-extensions"
     exit 1
 fi
 
@@ -93,7 +103,7 @@ fi
 # Build the workspace
 echo -e "${YELLOW}[5/6] Building ROS2 packages...${NC}"
 cd "${WORKSPACE_DIR}"
-source /opt/ros/humble/setup.bash
+source /opt/ros/${ROS_DISTRO}/setup.bash
 
 # Build interfaces first (needed by teachbot_ros)
 echo "Building teachbot_interfaces..."
