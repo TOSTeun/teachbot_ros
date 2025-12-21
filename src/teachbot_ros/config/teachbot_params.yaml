@@ -1,0 +1,57 @@
+# teachbot_params.yaml
+# Configuration for TOS Teachbot with UR5e visualization
+# Uses official UR5e joint naming convention
+
+teachbot_publisher:
+  ros__parameters:
+    # Network configuration
+    remote_ip: "192.168.100.152"   # IP address of the teachbot (TCP server)
+    start_port: 5004               # First encoder TCP port (encoders on 5004-5009)
+    ee_port: 5011                  # RS-485 trigger/button TCP port
+    
+    # Robot configuration
+    robot_model: "Cobot_200_200_mm"  # FK model for calculations
+    dof: 6
+    
+    # Publishing rate (Hz)
+    publish_rate: 250.0
+    
+    # UR5e joint names (official naming convention)
+    joint_names:
+      - "shoulder_pan_joint"
+      - "shoulder_lift_joint"
+      - "elbow_joint"
+      - "wrist_1_joint"
+      - "wrist_2_joint"
+      - "wrist_3_joint"
+    
+    # Encoder calibration offsets (raw counts at zero position)
+    position_offsets:
+      - 94465   # Joint 1 - shoulder_pan
+      - 122016  # Joint 2 - shoulder_lift
+      - 104800  # Joint 3 - elbow
+      - 17150   # Joint 4 - wrist_1
+      - 32100   # Joint 5 - wrist_2
+      - 0       # Joint 6 - wrist_3
+    
+    # Degree offsets applied after count->angle conversion
+    degree_offsets:
+      - 0.0     # shoulder_pan
+      - 0.0     # shoulder_lift
+      - 0.0     # elbow
+      - 0.0     # wrist_1
+      - 0.0     # wrist_2
+      - 0.0     # wrist_3
+    
+    # Joint scale factors (use -1.0 to invert direction)
+    joint_scale_factors:
+      - -1.0     # shoulder_pan
+      - -1.0     # shoulder_lift
+      - 1.0     # elbow
+      - -1.0     # wrist_1
+      - -1.0     # wrist_2
+      - -1.0     # wrist_3
+    
+    # Potentiometer calibration (raw ADC values)
+    pot_idle: 846    # Value when trigger not pressed (0%)
+    pot_full: 78     # Value when trigger fully pressed (100%)
