@@ -392,6 +392,6 @@ Proprietary — © TOS Robotics. All rights reserved.
 ---
 
 <div align="center">
-  <i>Built with ❤️ by TOS Robotics</i>
+  <i>Built by TOS Robotics</i>
 </div>
 
