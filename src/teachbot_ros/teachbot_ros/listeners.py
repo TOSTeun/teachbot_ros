@@ -203,16 +203,37 @@ class RS485Listener(threading.Thread):
                 continue
 
             leftover += data
+
+            # TCP stream framing: search for start byte 0xAA to resynchronize
             while len(leftover) >= self._packet_size:
-                frame, leftover = leftover[:self._packet_size], leftover[self._packet_size:]
-                self._decode(frame)
+                # Find the start byte
+                start_idx = leftover.find(bytes([START_BYTE]))
+                if start_idx == -1:
+                    # No start byte found, discard buffer
+                    leftover = b""
+                    break
+                elif start_idx > 0:
+                    # Discard bytes before start byte (resync)
+                    leftover = leftover[start_idx:]
+                    continue
+
+                # We have a potential frame starting at index 0
+                if len(leftover) < self._packet_size:
+                    break  # Wait for more data
+
+                frame = leftover[:self._packet_size]
+
+                # Validate checksum before consuming
+                if (sum(frame[:4]) & 0xFF) == frame[4]:
+                    # Valid frame, consume and decode
+                    leftover = leftover[self._packet_size:]
+                    self._decode(frame)
+                else:
+                    # Invalid checksum - this 0xAA wasn't a real start byte
+                    # Skip this byte and search for next 0xAA
+                    leftover = leftover[1:]
 
     def _decode(self, buf: bytes) -> None:
-        if len(buf) != 5 or buf[0] != START_BYTE:
-            return
-        if (sum(buf[:4]) & 0xFF) != buf[4]:
-            return
-
         pot = (buf[2] << 8) | buf[1]
         btn = buf[3]
 
